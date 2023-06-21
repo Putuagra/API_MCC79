@@ -1,15 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace API.Models;
 
 [Table("tb_m_accounts")]
-public class Account
+public class Account : BasicEntity
 {
-    [Key]
-    [Column("guid")]
-    public Guid Guid { get; set; }
-
     [Column("password", TypeName = "nvarchar(255)")]
     public string Password { get; set; }
 
@@ -28,9 +23,7 @@ public class Account
     //blm tau boleh null apa gk
     public DateTime ExpiredTime { get; set; }
 
-    [Column("created_date")]
-    public DateTime CreatedDate { get; set; }
-
-    [Column("modified_date")]
-    public DateTime ModifiedDate { get; set; }
+    // Cardinality
+    public Employee Employee { get; set; }
+    public ICollection<AccountRole> AccountRoles { get; set; }
 }
