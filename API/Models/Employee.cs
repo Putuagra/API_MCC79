@@ -30,13 +30,13 @@ namespace API.Models
         [Column("hiring_date")]
         public DateTime HiringDate { get; set; }
 
-        [Column("email", TypeName = "nvarchar(50)")]
+        [Column("email", TypeName = "nvarchar(100)")]
         //unique
         public string Email { get; set; }
 
-        [Column("phone_number", TypeName = "nvarchar(50)")]
+        [Column("phone_number", TypeName = "nvarchar(20)")]
         //unique
-        public string? phone_number { get; set; }
+        public string phone_number { get; set; }
 
         [Column("created_date")]
         public DateTime CreatedDate { get; set; }

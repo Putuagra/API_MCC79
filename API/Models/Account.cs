@@ -7,8 +7,8 @@ namespace API.Models;
 public class Account
 {
     [Key]
-    [Column("employee_guid")]
-    public Guid EmployeeGuid { get; set; }
+    [Column("guid")]
+    public Guid Guid { get; set; }
 
     [Column("password", TypeName = "nvarchar(255)")]
     public string Password { get; set; }
