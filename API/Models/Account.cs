@@ -11,9 +11,9 @@ public class Account : BasicEntity
     [Column("is_deleted")]
     public bool IsDeleted { get; set; }
 
-    [Column("otp", TypeName = "nvarchar(6)")]
+    [Column("otp")]
     //blm tau boleh null apa gk
-    public string Otp { get; set; }
+    public int Otp { get; set; }
 
     [Column("is_used")]
     //blm tau boleh null apa gk
