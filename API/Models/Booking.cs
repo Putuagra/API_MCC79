@@ -29,6 +29,6 @@ public class Booking : BasicEntity
     public Guid EmployeeGuid { get; set; }
 
     // Cardinality
-    public Employee Employee { get; set; }
-    public Room room { get; set; }
+    public Employee? Employee { get; set; }
+    public Room? Room { get; set; }
 }
