@@ -5,66 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers;
 
 [ApiController]
-[Route("api/accountRoles")]
-public class AccountRoleController : ControllerBase
+[Route("api/accountroles")]
+public class AccountRoleController : GeneralController<AccountRole>
 {
-    private readonly IAccountRoleRepository _repository;
-    public AccountRoleController(IAccountRoleRepository repository)
+    public AccountRoleController(IAccountRoleRepository repository) : base(repository)
     {
-        _repository = repository;
-    }
 
-    [HttpGet]
-    public IActionResult GetAll()
-    {
-        var accountRoles = _repository.GetAll();
-
-        if (!accountRoles.Any())
-        {
-            return NotFound();
-        }
-
-        return Ok(accountRoles);
-    }
-
-    [HttpGet("{guid}")]
-    public IActionResult GetByGuid(Guid id)
-    {
-        var accountRole = _repository.GetByGuid(id);
-
-        if (accountRole is null)
-        {
-            return NotFound();
-        }
-        return Ok(accountRole);
-    }
-
-    [HttpPost]
-    public IActionResult Create(AccountRole accountRole)
-    {
-        var created = _repository.Create(accountRole);
-        return Ok(created);
-    }
-
-    [HttpPut]
-    public IActionResult Update(AccountRole accountRole)
-    {
-        var isUpdated = _repository.Update(accountRole);
-        if (!isUpdated)
-        {
-            return NotFound();
-        }
-        return Ok();
-    }
-
-    [HttpDelete]
-    public IActionResult Delete(Guid guid)
-    {
-        var isDeleted = _repository.Delete(guid);
-        if (!isDeleted)
-        {
-            return NotFound();
-        }
-        return Ok();
     }
 }

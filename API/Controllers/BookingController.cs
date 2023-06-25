@@ -6,65 +6,10 @@ namespace API.Controllers;
 
 [ApiController]
 [Route("api/bookings")]
-public class BookingController : ControllerBase
+public class BookingController : GeneralController<Booking>
 {
-    private readonly IBookingRepository _repository;
-    public BookingController(IBookingRepository repository)
+    public BookingController(IBookingRepository repository) : base(repository)
     {
-        _repository = repository;
-    }
 
-    [HttpGet]
-    public IActionResult GetAll()
-    {
-        var bookings = _repository.GetAll();
-
-        if (!bookings.Any())
-        {
-            return NotFound();
-        }
-
-        return Ok(bookings);
-    }
-
-    [HttpGet("{guid}")]
-    public IActionResult GetByGuid(Guid id)
-    {
-        var booking = _repository.GetByGuid(id);
-
-        if (booking is null)
-        {
-            return NotFound();
-        }
-        return Ok(booking);
-    }
-
-    [HttpPost]
-    public IActionResult Create(Booking booking)
-    {
-        var created = _repository.Create(booking);
-        return Ok(created);
-    }
-
-    [HttpPut]
-    public IActionResult Update(Booking booking)
-    {
-        var isUpdated = _repository.Update(booking);
-        if (!isUpdated)
-        {
-            return NotFound();
-        }
-        return Ok();
-    }
-
-    [HttpDelete]
-    public IActionResult Delete(Guid guid)
-    {
-        var isDeleted = _repository.Delete(guid);
-        if (!isDeleted)
-        {
-            return NotFound();
-        }
-        return Ok();
     }
 }

@@ -7,65 +7,23 @@ namespace API.Controllers;
 
 [ApiController]
 [Route("api/universities")]
-public class UniversityController : ControllerBase
+public class UniversityController : GeneralController<University>
 {
-    private readonly IUniversityRepository _repository;
-    public UniversityController(IUniversityRepository repository)
+    private readonly IUniversityRepository _univRepository;
+    public UniversityController(IUniversityRepository repository) : base(repository)
     {
-        _repository = repository;
+        _univRepository = repository;
     }
 
-    [HttpGet]
-    public IActionResult GetAll()
+    [HttpGet("getbyname/{name}")]
+    public IActionResult GetByName(string name)
     {
-        var universities = _repository.GetAll();
-
-        if (!universities.Any())
-        {
-            return NotFound();
-        }
-
-        return Ok(universities);
-    }
-
-    [HttpGet("{guid}")]
-    public IActionResult GetByGuid(Guid id)
-    {
-        var university = _repository.GetByGuid(id);
-
+        var university = _univRepository.GetByName(name);
         if (university is null)
         {
             return NotFound();
         }
+
         return Ok(university);
-    }
-
-    [HttpPost]
-    public IActionResult Create(University university)
-    {
-        var created = _repository.Create(university);
-        return Ok(created);
-    }
-
-    [HttpPut]
-    public IActionResult Update(University university)
-    {
-        var isUpdated = _repository.Update(university);
-        if (!isUpdated)
-        {
-            return NotFound();
-        }
-        return Ok();
-    }
-
-    [HttpDelete]
-    public IActionResult Delete(Guid guid)
-    {
-        var isDeleted = _repository.Delete(guid);
-        if (!isDeleted)
-        {
-            return NotFound();
-        }
-        return Ok();
     }
 }

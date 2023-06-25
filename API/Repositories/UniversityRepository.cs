@@ -4,68 +4,13 @@ using API.Models;
 
 namespace API.Repositories;
 
-public class UniversityRepository : IUniversityRepository
+public class UniversityRepository : GeneralRepository<University>, IUniversityRepository
 {
-    private readonly BookingDbContext _context;
-    public UniversityRepository(BookingDbContext context)
+    public UniversityRepository(BookingDbContext context) : base(context)
     {
-        _context = context;
     }
-    public University Create(University university)
+    public IEnumerable<University> GetByName(string name)
     {
-        try
-        {
-            _context.Set<University>().Add(university);
-            _context.SaveChanges();
-            return university;
-        }
-        catch
-        {
-            return new University();
-        }
-    }
-
-    public bool Delete(Guid guid)
-    {
-
-        try
-        {
-            var university = GetByGuid(guid);
-            if (university is null)
-            {
-                return false;
-            }
-            _context.Set<University>().Remove(university);
-            _context.SaveChanges();
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
-    }
-
-    public ICollection<University> GetAll()
-    {
-        return _context.Set<University>().ToList();
-    }
-
-    public University? GetByGuid(Guid guid)
-    {
-        return _context.Set<University>().Find(guid);
-    }
-
-    public bool Update(University university)
-    {
-        try
-        {
-            _context.Set<University>().Update(university);
-            _context.SaveChanges();
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
+        return _context.Set<University>().Where(u => u.Name.Contains(name));
     }
 }
