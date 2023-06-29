@@ -7,7 +7,7 @@ public class RegisterDto
 {
     [Required]
     public string FirstName { get; set; }
-    public string LastName { get; set; }
+    public string? LastName { get; set; }
     [Required]
     public DateTime BirthDate { get; set; }
     [Required]
@@ -17,9 +17,11 @@ public class RegisterDto
     public DateTime HiringDate { get; set; }
     [Required]
     [EmailAddress]
+    [EmployeeDuplicateProperty("string", "Email")]
     public string Email { get; set; }
     [Required]
     [Phone]
+    [EmployeeDuplicateProperty("string", "PhoneNumber")]
     public string PhoneNumber { get; set; }
     [Required]
     public string Major { get; set; }
@@ -32,11 +34,8 @@ public class RegisterDto
     public string UniversityCode { get; set; }
     [Required]
     public string UniversityName { get; set; }
-    [Required]
     [PasswordPolicy]
     public string Password { get; set; }
-    [Required]
-    [PasswordPolicy]
     [Compare("Password")]
     public string ConfirmPassword { get; set; }
 }

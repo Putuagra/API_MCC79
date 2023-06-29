@@ -148,4 +148,28 @@ public class BookingController : ControllerBase
             Message = "Successfully deleted"
         });
     }
+
+    [HttpGet("room-today")]
+    public IActionResult GetRoomToday()
+    {
+        var rooms = _service.GetRoomToday();
+
+        if (rooms == null)
+        {
+            return NotFound(new ResponseHandler<GetRoomTodayDto>
+            {
+                Code = StatusCodes.Status404NotFound,
+                Status = HttpStatusCode.NotFound.ToString(),
+                Message = "Data not found"
+            });
+        }
+
+        return Ok(new ResponseHandler<IEnumerable<GetRoomTodayDto>>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Data found",
+            Data = rooms
+        });
+    }
 }

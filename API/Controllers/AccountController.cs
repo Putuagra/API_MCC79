@@ -149,14 +149,13 @@ public class AccountController : ControllerBase
         });
     }
 
-    [Route("register")]
-    [HttpPost]
+    [HttpPost("register")]
     public IActionResult Register(RegisterDto register)
     {
         var accountRegister = _service.Register(register);
         if (accountRegister == null)
         {
-            return BadRequest(new ResponseHandler<RegisterDto>
+            return BadRequest(new ResponseHandler<GetRegisterDto>
             {
                 Code = StatusCodes.Status400BadRequest,
                 Status = HttpStatusCode.BadRequest.ToString(),
@@ -164,12 +163,90 @@ public class AccountController : ControllerBase
             });
         }
 
-        return Ok(new ResponseHandler<RegisterDto>
+        return Ok(new ResponseHandler<GetRegisterDto>
         {
             Code = StatusCodes.Status200OK,
             Status = HttpStatusCode.OK.ToString(),
             Message = "Successfully register",
             Data = accountRegister
+        });
+    }
+
+    [HttpPut("change-password")]
+    public IActionResult ChangePassword(ChangePasswordDto changePasswordDto)
+    {
+        var update = _service.ChangePassword(changePasswordDto);
+        if (update is -1)
+        {
+            return NotFound(new ResponseHandler<ChangePasswordDto>
+            {
+                Code = StatusCodes.Status404NotFound,
+                Status = HttpStatusCode.NotFound.ToString(),
+                Message = "Email not found"
+            });
+        }
+        if (update is 0)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, new ResponseHandler<ChangePasswordDto>
+            {
+                Code = StatusCodes.Status500InternalServerError,
+                Status = HttpStatusCode.InternalServerError.ToString(),
+                Message = "Otp does not match"
+            });
+        }
+        if (update is 1)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, new ResponseHandler<ChangePasswordDto>
+            {
+                Code = StatusCodes.Status500InternalServerError,
+                Status = HttpStatusCode.InternalServerError.ToString(),
+                Message = "Otp has been used"
+            });
+        }
+        if (update is 2)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, new ResponseHandler<ChangePasswordDto>
+            {
+                Code = StatusCodes.Status500InternalServerError,
+                Status = HttpStatusCode.InternalServerError.ToString(),
+                Message = "Otp already expired"
+            });
+        }
+        return Ok(new ResponseHandler<ChangePasswordDto>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Successfully updated"
+        });
+    }
+
+    [HttpPost("forget-password")]
+    public IActionResult ForgetPassword(ForgetPasswordDto forgetPasswordDto)
+    {
+        var forgetPassword = _service.ForgetPassword(forgetPasswordDto);
+        if (forgetPassword is -1)
+        {
+            return NotFound(new ResponseHandler<ForgetPasswordDto>
+            {
+                Code = StatusCodes.Status404NotFound,
+                Status = HttpStatusCode.NotFound.ToString(),
+                Message = "Email not found"
+            });
+        }
+        if (forgetPassword is 0)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, new ResponseHandler<ForgetPasswordDto>
+            {
+                Code = StatusCodes.Status500InternalServerError,
+                Status = HttpStatusCode.InternalServerError.ToString(),
+                Message = "Otp does not match"
+            });
+        }
+        return Ok(new ResponseHandler<ForgetPasswordDto>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Successfully updated"
         });
     }
 }
