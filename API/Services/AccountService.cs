@@ -3,6 +3,7 @@ using API.Data;
 using API.DTOs.Accounts;
 using API.Models;
 using API.Utilites.Enums;
+using System.Security.Claims;
 
 namespace API.Services;
 
@@ -13,18 +14,27 @@ public class AccountService
     private readonly IUniversityRepository _universityRepository;
     private readonly IEducationRepository _educationRepository;
     private readonly BookingDbContext _dBContext;
+    private readonly ITokenHandler _tokenHandler;
+    private readonly IAccountRoleRepository _accountRoleRepository;
+    private readonly IRoleRepository _roleRepository;
 
     public AccountService(IAccountRepository accountRepository,
             IEmployeeRepository employeeRepository,
             IUniversityRepository universityRepository,
             IEducationRepository educationRepository,
-            BookingDbContext dBContext)
+            BookingDbContext dBContext,
+            ITokenHandler tokenHandler,
+            IAccountRoleRepository accountRoleRepository,
+            IRoleRepository roleRepository)
     {
         _accountRepository = accountRepository;
         _employeeRepository = employeeRepository;
         _universityRepository = universityRepository;
         _educationRepository = educationRepository;
         _dBContext = dBContext;
+        _tokenHandler = tokenHandler;
+        _accountRoleRepository = accountRoleRepository;
+        _roleRepository = roleRepository;
     }
 
     public IEnumerable<GetAccountDto>? GetAccount()
@@ -309,5 +319,38 @@ public class AccountService
             return 0;
         }
         return 1;
+    }
+
+    public string Login(LoginDto loginDto)
+    {
+        var EmailEmployee = _employeeRepository.GetEmailLogin(loginDto.Email);
+        if (EmailEmployee == null)
+        {
+            return "0";
+        }
+
+        var password = _accountRepository.GetByGuid(EmailEmployee.Guid);
+        var isValid = Hashing.ValidatePassword(loginDto.Password, password!.Password);
+        if (!isValid)
+        {
+            return "-1";
+        }
+        /* var roleEmployee = ;
+         var role = _roleRepository.GetByGuid;*/
+        var claims = new List<Claim>() {
+            new Claim("NIK", EmailEmployee.Nik),
+            new Claim("FullName", $"{EmailEmployee.FirstName} {EmailEmployee.LastName}"),
+            new Claim("Email", loginDto.Email)
+        };
+
+        try
+        {
+            var getToken = _tokenHandler.GenerateToken(claims);
+            return getToken;
+        }
+        catch
+        {
+            return "-2";
+        }
     }
 }
