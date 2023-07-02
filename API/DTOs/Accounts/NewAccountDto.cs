@@ -1,4 +1,4 @@
-﻿using API.Utilites.Enums;
+﻿using API.Utilites.Validations;
 
 namespace API.DTOs.Accounts;
 
