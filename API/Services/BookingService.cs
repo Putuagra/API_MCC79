@@ -176,4 +176,72 @@ public class BookingService
         });
         return toDto;
     }
+
+    public List<BookingDetailsDto>? GetBookingDetails()
+    {
+        var bookings = _bookingRepository.GetBookingDetails();
+        var bookingDetails = bookings.Select(b => new BookingDetailsDto
+        {
+            Guid = b.Guid,
+            BookedNik = b.BookedNik,
+            BookedBy = b.BookedBy,
+            RoomName = b.RoomName,
+            StartDate = b.StartDate,
+            EndDate = b.EndDate,
+            Status = b.Status,
+            Remarks = b.Remarks
+        }).ToList();
+
+        return bookingDetails;
+    }
+    public BookingDetailsDto? GetBookingDetailsByGuid(Guid guid)
+    {
+        var relatedBooking = GetBookingDetails().FirstOrDefault(b => b.Guid == guid);
+        return relatedBooking;
+    }
+
+    public IEnumerable<BookingLengthDto>? BookingDuration()
+    {
+        var bookings = _bookingRepository.GetAll();
+        var rooms = _roomRepository.GetAll();
+
+        var entities = (from b in bookings
+                        join r in rooms on b.RoomGuid equals r.Guid
+                        select new
+                        {
+                            guid = r.Guid,
+                            startDate = b.StartDate,
+                            endDate = b.EndDate,
+                            roomName = r.Name
+                        }).ToList();
+
+        var bookingDurations = new List<BookingLengthDto>();
+
+        foreach (var entity in entities)
+        {
+            TimeSpan duration = entity.endDate - entity.startDate;
+
+            int totalDays = (int)duration.Days;
+            int weekends = 0;
+
+            for (int i = 0; i <= totalDays; i++)
+            {
+                var currentDate = entity.startDate.AddDays(i);
+                if (currentDate.DayOfWeek == DayOfWeek.Saturday || currentDate.DayOfWeek == DayOfWeek.Sunday)
+                {
+                    weekends++;
+                }
+            }
+
+            TimeSpan bookingLength = duration - TimeSpan.FromDays(weekends);
+            var bookingDurationDto = new BookingLengthDto
+            {
+                RoomGuid = entity.guid,
+                RoomName = entity.roomName,
+                BookingLength = bookingLength
+            };
+            bookingDurations.Add(bookingDurationDto);
+        }
+        return bookingDurations;
+    }
 }
