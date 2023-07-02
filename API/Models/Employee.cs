@@ -1,4 +1,4 @@
-﻿using API.Utilites.Enums;
+﻿using API.Utilities.Enums;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace API.Models;
