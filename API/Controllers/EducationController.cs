@@ -1,6 +1,6 @@
 ﻿using API.DTOs.Educations;
 using API.Services;
-using API.Utilites.Enums;
+using API.Utilites.Handlers;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
