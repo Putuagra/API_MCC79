@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using TokenHandler = API.Utilities.Handlers.TokenHandler;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,7 +47,7 @@ builder.Services.AddTransient<IEmailHandler, EmailHandler>(_ => new EmailHandler
     ));
 
 // Add TokenHandler
-builder.Services.AddScoped<ITokenHandler, TokensHandler>();
+builder.Services.AddScoped<ITokenHandler, TokenHandler>();
 builder.Services.AddScoped<GenerateNik>();
 
 // JWT Configuration

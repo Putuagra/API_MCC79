@@ -8,7 +8,6 @@ using System.Net;
 
 namespace API.Controllers;
 
-
 [ApiController]
 [Route("api/universities")]
 [Authorize(Roles = $"{nameof(RoleLevel.Admin)}")]

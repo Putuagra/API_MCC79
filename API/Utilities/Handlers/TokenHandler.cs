@@ -6,11 +6,11 @@ using System.Text;
 
 namespace API.Utilities.Handlers;
 
-public class TokensHandler : ITokenHandler
+public class TokenHandler : ITokenHandler
 {
     private readonly IConfiguration _configuration;
 
-    public TokensHandler(IConfiguration configuration)
+    public TokenHandler(IConfiguration configuration)
     {
         _configuration = configuration;
     }

@@ -1,6 +1,8 @@
 ﻿using API.DTOs.Employees;
 using API.Services;
 using API.Utilites.Handlers;
+using API.Utilities.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -8,6 +10,7 @@ namespace API.Controllers;
 
 [ApiController]
 [Route("api/employees")]
+[Authorize(Roles = $"{nameof(RoleLevel.Admin)}")]
 public class EmployeeController : ControllerBase
 {
     private readonly EmployeeService _service;
