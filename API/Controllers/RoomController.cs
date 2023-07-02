@@ -1,6 +1,6 @@
 ﻿using API.DTOs.Rooms;
 using API.Services;
-using API.Utilites.Enums;
+using API.Utilites.Handlers;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -60,6 +60,30 @@ public class RoomController : ControllerBase
             Status = HttpStatusCode.OK.ToString(),
             Message = "Data found",
             Data = room
+        });
+    }
+
+    [HttpGet("unused")]
+    public IActionResult GetUnusedRoom()
+    {
+        var rooms = _service.GetUnusedRooms();
+
+        if (!rooms.Any())
+        {
+            return NotFound(new ResponseHandler<IEnumerable<UnusedRoomDto>>
+            {
+                Code = StatusCodes.Status404NotFound,
+                Status = HttpStatusCode.NotFound.ToString(),
+                Message = "Semua room sedang dipakai",
+                Data = rooms
+            });
+        }
+        return Ok(new ResponseHandler<IEnumerable<UnusedRoomDto>>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Data found",
+            Data = rooms
         });
     }
 
