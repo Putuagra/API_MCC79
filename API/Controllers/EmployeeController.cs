@@ -1,6 +1,6 @@
 ﻿using API.DTOs.Employees;
 using API.Services;
-using API.Utilites.Enums;
+using API.Utilites.Handlers;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -55,6 +55,52 @@ public class EmployeeController : ControllerBase
         }
 
         return Ok(new ResponseHandler<GetEmployeeDto>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Data found",
+            Data = employee
+        });
+    }
+
+    [HttpGet("get-all-master")]
+    public IActionResult GetMaster()
+    {
+        var employees = _service.GetMaster();
+        if (employees is null)
+        {
+            return NotFound(new ResponseHandler<EmployeeEducationDto>
+            {
+                Code = StatusCodes.Status404NotFound,
+                Status = HttpStatusCode.NotFound.ToString(),
+                Message = "No data found"
+            });
+        }
+
+        return Ok(new ResponseHandler<IEnumerable<EmployeeEducationDto>>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Data found",
+            Data = employees
+        });
+    }
+
+    [HttpGet("get-master/{guid}")]
+    public IActionResult GetMasterByGuid(Guid guid)
+    {
+        var employee = _service.GetMasterByGuid(guid);
+        if (employee is null)
+        {
+            return NotFound(new ResponseHandler<EmployeeEducationDto>
+            {
+                Code = StatusCodes.Status404NotFound,
+                Status = HttpStatusCode.NotFound.ToString(),
+                Message = "No data found"
+            });
+        }
+
+        return Ok(new ResponseHandler<EmployeeEducationDto>
         {
             Code = StatusCodes.Status200OK,
             Status = HttpStatusCode.OK.ToString(),
