@@ -23,4 +23,9 @@ public class EmployeeRepository : GeneralRepository<Employee>, IEmployeeReposito
     {
         return _context.Set<Employee>().SingleOrDefault(e => e.Email == email);
     }
+
+    public string? GetLastEmployeeNik()
+    {
+        return _context.Set<Employee>().ToList().Select(e => e.Nik).LastOrDefault();
+    }
 }
