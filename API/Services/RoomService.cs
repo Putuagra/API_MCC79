@@ -7,9 +7,11 @@ namespace API.Services;
 public class RoomService
 {
     private readonly IRoomRepository _roomRepository;
-    public RoomService(IRoomRepository roomRepository)
+    private readonly IBookingRepository _bookingRepository;
+    public RoomService(IRoomRepository roomRepository, IBookingRepository bookingRepository)
     {
         _roomRepository = roomRepository;
+        _bookingRepository = bookingRepository;
     }
 
     public IEnumerable<GetRoomDto>? GetRoom()
@@ -126,7 +128,44 @@ public class RoomService
         {
             return 0;
         }
-
         return 1;
+    }
+
+    public IEnumerable<UnusedRoomDto> GetUnusedRooms()
+    {
+        var rooms = _roomRepository.GetAll().ToList();
+
+        var usedRooms = from r in _roomRepository.GetAll()
+                        join b in _bookingRepository.GetAll() on r.Guid equals b.RoomGuid
+                        where b.Status == Utilites.Enums.StatusLevel.OnGoing
+                        select new UnusedRoomDto
+                        {
+                            RoomGuid = r.Guid,
+                            RoomName = r.Name,
+                            Floor = r.Floor,
+                            Capacity = r.Capacity,
+                        };
+
+        List<Room> tmpRooms = new List<Room>(rooms);
+        foreach (var room in rooms)
+        {
+            foreach (var usedRoom in usedRooms)
+            {
+                if (room.Guid == usedRoom.RoomGuid)
+                {
+                    tmpRooms.Remove(room);
+                    break;
+                }
+            }
+        }
+        var unusedRooms = from room in tmpRooms
+                          select new UnusedRoomDto
+                          {
+                              RoomGuid = room.Guid,
+                              RoomName = room.Name,
+                              Floor = room.Floor,
+                              Capacity = room.Capacity
+                          };
+        return unusedRooms;
     }
 }
