@@ -2,7 +2,8 @@
 using API.Data;
 using API.DTOs.Accounts;
 using API.Models;
-using API.Utilites.Enums;
+using API.Utilites.Handlers;
+using API.Utilities.Handlers;
 using System.Security.Claims;
 
 namespace API.Services;
@@ -17,6 +18,7 @@ public class AccountService
     private readonly ITokenHandler _tokenHandler;
     private readonly IAccountRoleRepository _accountRoleRepository;
     private readonly IRoleRepository _roleRepository;
+    private readonly IEmailHandler _emailHandler;
 
     public AccountService(IAccountRepository accountRepository,
             IEmployeeRepository employeeRepository,
@@ -25,7 +27,8 @@ public class AccountService
             BookingDbContext dBContext,
             ITokenHandler tokenHandler,
             IAccountRoleRepository accountRoleRepository,
-            IRoleRepository roleRepository)
+            IRoleRepository roleRepository,
+            IEmailHandler emailHandler)
     {
         _accountRepository = accountRepository;
         _employeeRepository = employeeRepository;
@@ -35,6 +38,7 @@ public class AccountService
         _tokenHandler = tokenHandler;
         _accountRoleRepository = accountRoleRepository;
         _roleRepository = roleRepository;
+        _emailHandler = emailHandler;
     }
 
     public IEnumerable<GetAccountDto>? GetAccount()
@@ -167,7 +171,6 @@ public class AccountService
 
     public GetRegisterDto? Register(RegisterDto registerDto)
     {
-        EmployeeService employeeService = new EmployeeService(_employeeRepository);
         using var transaction = _dBContext.Database.BeginTransaction();
         try
         {
@@ -176,14 +179,15 @@ public class AccountService
                 Guid = new Guid(),
                 FirstName = registerDto.FirstName,
                 LastName = registerDto.LastName ?? "",
+                BirthDate = registerDto.BirthDate,
                 Gender = registerDto.Gender,
                 HiringDate = registerDto.HiringDate,
                 Email = registerDto.Email,
-                Nik = employeeService.GenerateNik(),
                 PhoneNumber = registerDto.PhoneNumber,
                 CreatedDate = DateTime.Now,
                 ModifiedDate = DateTime.Now,
             };
+            employee.Nik = GenerateNik.Nik(_employeeRepository.GetLastEmployeeNik());
             _employeeRepository.Create(employee);
 
             var account = new Account
@@ -198,6 +202,13 @@ public class AccountService
                 ExpiredTime = DateTime.Now.AddYears(5),
             };
             _accountRepository.Create(account);
+
+            var roleUser = _roleRepository.GetByName("User");
+            _accountRoleRepository.Create(new AccountRole
+            {
+                AccountGuid = account.Guid,
+                RoleGuid = roleUser.Guid
+            });
 
             var universityEntity = _universityRepository.GetByCodeAndName(registerDto.UniversityCode, registerDto.UniversityName);
             if (universityEntity == null)
@@ -241,7 +252,6 @@ public class AccountService
         }
     }
 
-
     public int ChangePassword(ChangePasswordDto changePasswordDto)
     {
         var isExist = _employeeRepository.GetByEmail(changePasswordDto.Email);
@@ -264,18 +274,17 @@ public class AccountService
             return 2;
         }
 
-        var account = new Account
+        var isUpdated = _accountRepository.Update(new Account
         {
             Guid = getAccount.Guid,
-            IsUsed = getAccount.IsUsed,
+            IsUsed = true,
             IsDeleted = getAccount.IsDeleted,
             ModifiedDate = DateTime.Now,
             CreatedDate = getAccount!.CreatedDate,
             Otp = changePasswordDto.Otp,
             ExpiredTime = getAccount.ExpiredTime,
             Password = Hashing.HashPassword(changePasswordDto.NewPassword)
-        };
-        var isUpdated = _accountRepository.Update(account);
+        });
         if (!isUpdated)
         {
             return 0;
@@ -288,36 +297,35 @@ public class AccountService
         var isExist = _employeeRepository.GetByEmail(forgetPasswordDto.Email);
         if (isExist == null)
         {
+            return 0;
+        }
+
+        var account = _accountRepository.GetByGuid(isExist.Guid);
+        if (account is null)
+        {
             return -1;
         }
 
-        Random rand = new Random();
-        HashSet<int> uniqueDigits = new HashSet<int>();
-
-        while (uniqueDigits.Count < 6)
+        var otp = new Random().Next(111111, 999999);
+        var isUpdated = _accountRepository.Update(new Account
         {
-            int digit = rand.Next(0, 9);
-            uniqueDigits.Add(digit);
-        }
-
-        int generateOtp = uniqueDigits.Aggregate(0, (acc, digit) => acc * 10 + digit);
-
-        var relatedAccount = GetAccount(isExist.Guid);
-
-        var updateAccountDto = new GetAccountDto
-        {
-            Guid = relatedAccount.Guid,
-            Password = relatedAccount.Password,
-            IsDeleted = relatedAccount.IsDeleted,
-            Otp = generateOtp,
+            Guid = account.Guid,
+            Password = account.Password,
+            IsDeleted = account.IsDeleted,
+            Otp = otp,
+            ExpiredTime = DateTime.Now.AddMinutes(5),
             IsUsed = false,
-            ExpiredTime = DateTime.Now.AddMinutes(5)
-        };
-        var updateResult = UpdateAccount(updateAccountDto);
-        if (updateResult == 0)
-        {
-            return 0;
-        }
+            CreatedDate = account.CreatedDate,
+            ModifiedDate = DateTime.Now
+        });
+
+        if (!isUpdated)
+            return -1;
+
+        _emailHandler.SendEmail(forgetPasswordDto.Email,
+                                "Forgot Password",
+                                $"Your OTP is {otp}");
+
         return 1;
     }
 
@@ -335,16 +343,20 @@ public class AccountService
         {
             return "-1";
         }
-        /* var roleEmployee = ;
-         var role = _roleRepository.GetByGuid;*/
-        var claims = new List<Claim>() {
-            new Claim("NIK", EmailEmployee.Nik),
-            new Claim("FullName", $"{EmailEmployee.FirstName} {EmailEmployee.LastName}"),
-            new Claim("Email", loginDto.Email)
-        };
 
         try
         {
+            var accountRole = _accountRoleRepository.GetByAccountGuid(EmailEmployee.Guid);
+            var getRoleNameByAccountRole = from ar in accountRole
+                                           join r in _roleRepository.GetAll()
+                                           on ar.RoleGuid equals r.Guid
+                                           select r.Name;
+
+            var claims = new List<Claim>() {
+            new Claim("NIK", EmailEmployee.Nik),
+            new Claim("FullName", $"{EmailEmployee.FirstName} {EmailEmployee.LastName}"),
+            new Claim("Email", loginDto.Email)};
+            claims.AddRange(getRoleNameByAccountRole.Select(role => new Claim(ClaimTypes.Role, role.ToString())));
             var getToken = _tokenHandler.GenerateToken(claims);
             return getToken;
         }
