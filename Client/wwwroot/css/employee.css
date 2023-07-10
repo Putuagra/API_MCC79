@@ -1,0 +1,34 @@
+div.dt-button-collection {
+    width: 400px;
+}
+
+    div.dt-button-collection button.dt-button {
+        display: inline-block;
+        width: 100%;
+    }
+    div.dt-button-collection h3 {
+        margin-top: 5px;
+        margin-bottom: 5px;
+        font-weight: 100;
+        border-bottom: 1px solid rgba(150, 150, 150, 0.5);
+        font-size: 1em;
+        padding: 0 1em;
+    }
+#myTable_wrapper  div.dt-buttons  button.dt-button.buttons-collection.buttons-colvis.btn-colvis{
+    background-color: dodgerblue;
+    color:white
+}
+
+#myTable_wrapper div.dt-buttons button.dt-button.buttons-print.btn.btn-danger {
+    background-color: red;
+    color: white
+}
+
+#myTable_wrapper div.dt-buttons button.dt-button.buttons-collection.custom-html-collection {
+    background-color: seagreen;
+    color: white
+}
+
+#myTable_wrapper div.dt-buttons button.dt-button.buttons-copy.buttons-html5 {
+    background-color: antiquewhite;
+}

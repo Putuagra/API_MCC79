@@ -1,0 +1,114 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Layout = "_LayoutAjax";
+}
+
+<div class="container">
+    <table class="table table-striped table-hover table-bordered" id="myTable">
+    <thead>
+        <tr class = "table-dark">
+                <th class="col-1">No</th>
+                <th class="col-4">Name</th>
+                <th class="col-1">Detail</th>
+        </tr>
+    </thead>
+    <tbody id="tbodyPKM">
+
+    </tbody>
+</table>
+</div>
+
+<div class="modal fade" id="modalPKM" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row justify-content-around">
+                <div id="carouselExampleIndicators" class="carousel slide col-md-5" data-bs-ride="carousel">
+                    <div class="bg-dark bg-opacity-25">
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                        </div>
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <img src="" class="d-block w-100" alt="..." id="image-front">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="" class="d-block w-100" alt="..." id="image-shiny">
+                            </div>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <ul class="nav nav-tabs" id="myTabs">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="tab1" data-bs-toggle="tab" href="#content1">Profile</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="tab2" data-bs-toggle="tab" href="#content2">Stats</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="tab3" data-bs-toggle="tab" href="#content3">Moves</a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <div id="content1" class="tab-pane fade show active">
+                            <h3 class="mt-2" id="title">Profiles</h3>
+                            <h5 class="mt-2" id="title">Types</h5>
+                            <div class="type-list" id="types"></div>
+                            <h5 class="mt-2" id="title">Abilities</h5>
+                            <div class="ability-list"></div>
+                            <div class="height-stat">
+                                    <h5 class="mt-2" id="title">Height</h5>
+                                    <span class='height'></span>
+                            </div>
+                                <div class="weight-stat">
+                                    <h5 class="mt-2" id="title">Weight</h5>
+                                    <span class='weight'></span>
+                                </div>
+                                
+                        </div>
+                        <div id="content2" class="tab-pane fade">
+                            <h3 class="mt-2">Base Stats</h3>
+                                <div class="screen-stats">
+                                    <table class="table">
+                                        <tbody id="tbodyStat">
+                                        </tbody>
+                                    </table>
+                                </div>
+                        </div>
+                        <div id="content3" class="tab-pane fade">
+                            <h3 class="mt-2">Move List</h3>
+                            <div class="move-list">
+                                    <table class="table table-success table-hover table-striped table-sm">
+                                    <tbody id="tbodyMove">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+            </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>

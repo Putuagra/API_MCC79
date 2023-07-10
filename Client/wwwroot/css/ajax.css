@@ -1,0 +1,24 @@
+﻿.move-list {
+    overflow-y: scroll;
+    height: 200px;
+}
+
+.modal-header{
+    background-color: indianred
+}
+
+.modal-footer {
+    background-color: indianred
+}
+
+.modal-title{
+    color: ghostwhite
+}
+
+.modal-body{
+    background-color: oldlace
+}
+
+.dataTables_filter, dataTables_length {
+    padding-bottom: 10px;
+}
