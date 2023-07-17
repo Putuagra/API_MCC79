@@ -1,4 +1,5 @@
-﻿using API.Utilities.Enums;
+﻿using API.Utilites.Validations;
+using API.Utilities.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace API.DTOs.Employees;
@@ -16,7 +17,9 @@ public class NewEmployeeDto
     public DateTime HiringDate { get; set; }
     [Required]
     [EmailAddress]
+    [EmployeeDuplicateProperty("string", "Email")]
     public string Email { get; set; }
     [Required]
+    [EmployeeDuplicateProperty("string", "PhoneNumber")]
     public string PhoneNumber { get; set; }
 }
